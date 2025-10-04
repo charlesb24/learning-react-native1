@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, ScrollView, Button } from 'react-native';
+import { StyleSheet, Text, TextInput, View, FlatList, Button } from 'react-native';
+import GoalItem from "./components/GoalItem";
 
 export default function App() {
   const [ goalText, setGoalText ] = useState('');
@@ -11,7 +12,10 @@ export default function App() {
   }
 
   function handleAddGoal() {
-    setGoals(prevState => [ ...prevState, goalText ]);
+    setGoals(prevState => [
+      ...prevState,
+      { text: goalText, id: Math.random().toString() }
+    ]);
     setGoalText('');
   }
 
@@ -30,13 +34,13 @@ export default function App() {
 
       <View style={ styles.goalsContainer }>
         <Text style={ styles.goalsCaption }>List of goals</Text>
-        <ScrollView>
-          { goals.map((goal, index) => (
-            <View style={ styles.goalItem } key={ goal + index.toString() }>
-              <Text style={ styles.goalText }>{ goal }</Text>
-            </View>
-          ))}
-        </ScrollView>
+        <FlatList
+          data={ goals }
+          keyExtractor={ (item, index) => item.id }
+          renderItem={ goalInfo => {
+            return <GoalItem text={ goalInfo.item.text } />;
+          }}
+        />
       </View>
 
       <StatusBar style="dark" />
@@ -72,14 +76,5 @@ const styles = StyleSheet.create({
   },
   goalsCaption: {
     textAlign: 'center',
-  },
-  goalItem: {
-    margin: 8,
-    padding: 8,
-    borderRadius: 6,
-    backgroundColor: '#5e0acc',
-  },
-  goalText: {
-    color: '#ffffff',
   },
 });
