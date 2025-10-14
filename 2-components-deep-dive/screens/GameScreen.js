@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Text, View, StyleSheet, Alert } from 'react-native';
 
 import NumberContainer from '../components/game/NumberContainer';
 import PrimaryButton from '../components/ui/PrimaryButton';
@@ -13,9 +13,37 @@ function generateRandomBetween(min, max, exclude) {
     : randNum;
 }
 
-export default function GameScreen({ userNumber }) {
+let min = 1;
+let max = 100;
+
+export default function GameScreen({ userNumber, onGameOver }) {
   const initialGuess = generateRandomBetween(1, 100, userNumber);
   const [ currentGuess, setCurrentGuess ] = useState(initialGuess);
+
+  useEffect(() => {
+    if (currentGuess === userNumber) {
+      onGameOver();
+    }
+  }, [ currentGuess, userNumber, onGameOver ]);
+
+  function handleNewGuess(type) {
+    if (
+      (type === 'lower' && currentGuess < userNumber) ||
+      (type === 'higher' && currentGuess > userNumber)
+    ) {
+      Alert.alert('Don\'t lie!', 'You know the rules, and so do I...', [ { text: 'Sorry!', style: 'cancel' }]);
+      return;
+    }
+
+    if (type === 'lower') {
+      max = currentGuess;
+    } else if (type === 'higher') {
+      min = currentGuess + 1;
+    }
+
+    const newGuess = generateRandomBetween(min, max, currentGuess);
+    setCurrentGuess(newGuess);
+  }
 
   return (
     <View style={ styles.screen }>
@@ -24,15 +52,14 @@ export default function GameScreen({ userNumber }) {
 
       <View>
         <Text>Higher or lower?</Text>
-      </View>
-
-      <View>
-        <PrimaryButton onPress={() => console.log('+')}>
-          +
-        </PrimaryButton>
-        <PrimaryButton onPress={() => console.log('-')}>
-          -
-        </PrimaryButton>
+        <View>
+          <PrimaryButton onPress={ handleNewGuess.bind(this, 'higher') }>
+            +
+          </PrimaryButton>
+          <PrimaryButton onPress={ handleNewGuess.bind(this, 'lower') }>
+            -
+          </PrimaryButton>
+        </View>
       </View>
     </View>
   );

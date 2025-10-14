@@ -5,19 +5,30 @@ import { StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
 
 import StartGameScreen from './screens/StartGameScreen';
 import GameScreen from './screens/GameScreen';
+import GameOverScreen from './screens/GameOverScreen';
 import Colors from './constants/colors';
 
 export default function App() {
   const [ userNumber, setUserNumber ] = useState(-1);
+  const [ gameOver, setGameOver ] = useState(true);
 
   function handleStartGame(number) {
     setUserNumber(number);
+    setGameOver(false);
   }
 
-  let currentScreen = <StartGameScreen onConfirm={ handleStartGame } />
+  function handleGameOver() {
+    setGameOver(true);
+  }
+
+  let currentScreen = <StartGameScreen onConfirm={ handleStartGame } />;
 
   if (userNumber !== -1) {
-    currentScreen = <GameScreen />
+    currentScreen = <GameScreen userNumber={ userNumber } onGameOver={ handleGameOver } />;
+  }
+
+  if (gameOver && userNumber !== -1) {
+    currentScreen = <GameOverScreen />;
   }
 
   return (
