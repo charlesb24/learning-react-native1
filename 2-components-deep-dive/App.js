@@ -1,6 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect, useState } from 'react';
 import { StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
 
 import StartGameScreen from './screens/StartGameScreen';
@@ -11,6 +13,25 @@ import Colors from './constants/colors';
 export default function App() {
   const [ userNumber, setUserNumber ] = useState(-1);
   const [ gameOver, setGameOver ] = useState(true);
+
+  const [ loadedFonts] = useFonts({
+    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
+  });
+
+  useEffect(() => {
+    async function prepare() {
+      await SplashScreen.preventAutoHideAsync();
+    }
+
+    prepare();
+  }, []);
+
+  if (!loadedFonts) {
+    return undefined;
+  } else {
+    SplashScreen.hideAsync();
+  }
 
   function handleStartGame(number) {
     setUserNumber(number);
