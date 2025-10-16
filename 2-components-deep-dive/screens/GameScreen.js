@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { FlatList, View, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import Card from '../components/ui/Card';
@@ -7,6 +7,7 @@ import InstructionText from '../components/ui/InstructionText';
 import NumberContainer from '../components/game/NumberContainer';
 import PrimaryButton from '../components/ui/PrimaryButton';
 import Title from '../components/ui/Title';
+import GuessLogItem from '../components/game/GuessLogItem';
 
 function generateRandomBetween(min, max, exclude) {
   const randNum = Math.floor(Math.random() * (max - min)) + min;
@@ -22,12 +23,18 @@ let max = 100;
 export default function GameScreen({ userNumber, onGameOver }) {
   const initialGuess = generateRandomBetween(1, 100, userNumber);
   const [ currentGuess, setCurrentGuess ] = useState(initialGuess);
+  const [ guesses, setGuesses ] = useState([ initialGuess ]);
+
+  const guessCount = guesses.length;
 
   useEffect(() => {
     if (currentGuess === userNumber) {
-      onGameOver();
+      min = 1;
+      max = 100;
+
+      onGameOver(guessCount);
     }
-  }, [ currentGuess, userNumber, onGameOver ]);
+  }, [ currentGuess, guesses, userNumber, onGameOver ]);
 
   function handleNewGuess(type) {
     if (
@@ -45,7 +52,9 @@ export default function GameScreen({ userNumber, onGameOver }) {
     }
 
     const newGuess = generateRandomBetween(min, max, currentGuess);
+
     setCurrentGuess(newGuess);
+    setGuesses(prevState => [ newGuess, ...prevState ]);
   }
 
   return (
@@ -68,6 +77,19 @@ export default function GameScreen({ userNumber, onGameOver }) {
           </View>
         </View>
       </Card>
+
+      <View style={ styles.listContainer }>
+        <FlatList
+          data={ guesses }
+          keyExtractor={ item => item }
+          renderItem={ (data) =>
+            <GuessLogItem
+              roundNumber={ guessCount - data.index }
+              guess={ data.item }
+            />
+          }
+        />
+      </View>
     </View>
   );
 }
@@ -85,5 +107,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flex: 1,
+  },
+  listContainer: {
+    flex: 1,
+    padding: 16,
   },
 });

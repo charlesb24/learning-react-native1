@@ -12,6 +12,7 @@ import Colors from './constants/colors';
 
 export default function App() {
   const [ userNumber, setUserNumber ] = useState(-1);
+  const [ guessCount, setGuessCount ] = useState(0);
   const [ gameOver, setGameOver ] = useState(true);
 
   const [ loadedFonts] = useFonts({
@@ -38,8 +39,15 @@ export default function App() {
     setGameOver(false);
   }
 
-  function handleGameOver() {
+  function handleGameOver(guessCount) {
+    setGuessCount(guessCount);
     setGameOver(true);
+  }
+
+  function handleStartNewGame() {
+    setUserNumber(-1);
+    setGuessCount(0);
+    setGameOver(false);
   }
 
   let currentScreen = <StartGameScreen onConfirm={ handleStartGame } />;
@@ -49,7 +57,7 @@ export default function App() {
   }
 
   if (gameOver && userNumber !== -1) {
-    currentScreen = <GameOverScreen />;
+    currentScreen = <GameOverScreen userNumber={ userNumber } guessCount={ guessCount } onStartNewGame={ handleStartNewGame } />;
   }
 
   return (
