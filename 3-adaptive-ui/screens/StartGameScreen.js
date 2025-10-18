@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TextInput, View, StyleSheet, Alert, useWindowDimensions } from 'react-native';
+import { TextInput, View, StyleSheet, Alert, useWindowDimensions, KeyboardAvoidingView, ScrollView } from 'react-native';
 
 import Card from '../components/ui/Card';
 import InstructionText from '../components/ui/InstructionText';
@@ -39,33 +39,40 @@ export default function StartGameScreen({ onConfirm }) {
   const marginTop = height < 450 ? 30 : 100;
 
   return (
-    <View style={ [ styles.rootContainer, { marginTop } ] }>
-      <Title>Guess My Number</Title>
-      <Card>
-        <InstructionText>Enter A Number</InstructionText>
-        <TextInput
-          style={ styles.numberInput }
-          maxLength={2}
-          keyboardType="number-pad"
-          autoCapitalize="none"
-          autoCorrect={ false }
-          value={ inputNum }
-          onChangeText={ handleInputNumber }
-        />
-        <View style={ styles.buttonsContainer }>
-          <View style={ styles.buttonContainer }>
-            <PrimaryButton onPress={ handleReset }>Reset</PrimaryButton>
-          </View>
-          <View style={ styles.buttonContainer }>
-            <PrimaryButton onPress={ handleConfirm }>Confirm</PrimaryButton>
-          </View>
+    <ScrollView style={ styles.screen }>
+      <KeyboardAvoidingView style={ styles.screen } behavior="position">
+        <View style={ [ styles.rootContainer, { marginTop } ] }>
+          <Title>Guess My Number</Title>
+          <Card>
+            <InstructionText>Enter A Number</InstructionText>
+            <TextInput
+              style={ styles.numberInput }
+              maxLength={2}
+              keyboardType="number-pad"
+              autoCapitalize="none"
+              autoCorrect={ false }
+              value={ inputNum }
+              onChangeText={ handleInputNumber }
+            />
+            <View style={ styles.buttonsContainer }>
+              <View style={ styles.buttonContainer }>
+                <PrimaryButton onPress={ handleReset }>Reset</PrimaryButton>
+              </View>
+              <View style={ styles.buttonContainer }>
+                <PrimaryButton onPress={ handleConfirm }>Confirm</PrimaryButton>
+              </View>
+            </View>
+          </Card>
         </View>
-      </Card>
-    </View>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   rootContainer: {
     flex: 1,
     alignItems: 'center',

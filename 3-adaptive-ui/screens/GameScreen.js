@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FlatList, View, StyleSheet, Alert } from 'react-native';
+import { FlatList, View, StyleSheet, Alert, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import Card from '../components/ui/Card';
@@ -24,6 +24,7 @@ export default function GameScreen({ userNumber, onGameOver }) {
   const initialGuess = generateRandomBetween(1, 100, userNumber);
   const [ currentGuess, setCurrentGuess ] = useState(initialGuess);
   const [ guesses, setGuesses ] = useState([ initialGuess ]);
+  const { width, height } = useWindowDimensions();
 
   const guessCount = guesses.length;
 
@@ -57,9 +58,8 @@ export default function GameScreen({ userNumber, onGameOver }) {
     setGuesses(prevState => [ newGuess, ...prevState ]);
   }
 
-  return (
-    <View style={ styles.screen }>
-      <Title>Opponent's Guess</Title>
+  let content = (
+    <>
       <NumberContainer>{ currentGuess }</NumberContainer>
 
       <Card>
@@ -77,6 +77,36 @@ export default function GameScreen({ userNumber, onGameOver }) {
           </View>
         </View>
       </Card>
+    </>
+  );
+
+  if (width > height) {
+    content = (
+      <>
+        <View style={ styles.buttonsContainerLandscape }>
+          <View style={ styles.buttonContainer }>
+            <PrimaryButton onPress={ handleNewGuess.bind(this, 'lower') }>
+              <Ionicons name="remove" size={24} color="white" />
+            </PrimaryButton>
+          </View>
+
+          <NumberContainer>{ currentGuess }</NumberContainer>
+
+          <View style={ styles.buttonContainer }>
+            <PrimaryButton onPress={ handleNewGuess.bind(this, 'higher') }>
+              <Ionicons name="add" size={24} color="white" />
+            </PrimaryButton>
+          </View>
+        </View>
+      </>
+    );
+  }
+
+  return (
+    <View style={ styles.screen }>
+      <Title>Opponent's Guess</Title>
+
+      { content }
 
       <View style={ styles.listContainer }>
         <FlatList
@@ -105,6 +135,10 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'row',
+  },
+  buttonsContainerLandscape: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   buttonContainer: {
     flex: 1,
