@@ -2,7 +2,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import Colors from '../../constants/colors';
 
-export default function PrimaryButton({ onPress, children }) {
+export default function PrimaryButtonIos({ onPress, children }) {
   return (
     <View style={ styles.outerContainer }>
       <Pressable
@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary500,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    elevation: 2,
   },
   text: {
     color: 'white',

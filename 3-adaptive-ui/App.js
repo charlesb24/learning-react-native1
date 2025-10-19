@@ -62,7 +62,7 @@ export default function App() {
 
   return (
     <LinearGradient colors={ [ Colors.primary700, Colors.secondary500 ] } style={ styles.rootScreen }>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <ImageBackground
         source={ require('./assets/images/background.png') }
         resizeMode="cover"
