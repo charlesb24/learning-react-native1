@@ -6,7 +6,7 @@ import CategoryGridTile from '../components/CategoryGridTile';
 export default function Categories({ navigation }) {
 
   function renderCategoryItem(data) {
-    const navigateToCategory = navigation.navigate.bind(this, 'Category Overview', {
+    const navigateToCategory = navigation.navigate.bind(this, 'CategoryOverview', {
       categoryId: data.item.id,
     });
 

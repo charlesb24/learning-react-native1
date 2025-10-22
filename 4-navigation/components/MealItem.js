@@ -1,23 +1,28 @@
 import { Text, View, StyleSheet, Pressable, Image, Platform } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export default function MealItem({ title, duration, complexity, affordability, imageUrl, onPress }) {
+import Details from './Details';
+
+export default function MealItem({ id, title, duration, complexity, affordability, imageUrl }) {
+  const navigation = useNavigation();
+
   return (
     <View style={ styles.container }>
       <Pressable
         android_ripple={ { color: '#ccc' } }
         style={ ({ pressed }) => pressed ? styles.buttonPressed : null }
-        onPress={ onPress }
+        onPress={ navigation.navigate.bind(this, 'MealDetails', { mealId: id }) }
       >
         <View style={ styles.innerContainer }>
           <View>
             <Image source={ { uri: imageUrl } } style={ styles.image } />
             <Text style={ styles.title }>{ title }</Text>
           </View>
-          <View style={ styles.details }>
-            <Text style={ styles.detailItem }>{ duration }m</Text>
-            <Text style={ styles.detailItem }>{ complexity.toUpperCase() }</Text>
-            <Text style={ styles.detailItem }>{ affordability.toUpperCase() }</Text>
-          </View>
+          <Details
+            duration={ duration }
+            complexity={ complexity }
+            affordability={ affordability }
+          />
         </View>
       </Pressable>
     </View>
@@ -53,14 +58,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     padding: 8,
   },
-  details: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-  detailItem: {
-    marginHorizontal: 4,
-    fontSize: 12,
-  }
 });
