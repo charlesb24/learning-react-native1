@@ -5,8 +5,6 @@ import { CATEGORIES, MEALS } from '../data/example-data';
 import MealItem from '../components/MealItem';
 
 export default function CategoryOverview({ navigation, route }) {
-  console.log( route );
-
   const { categoryId } = route.params;
 
   const mealsInCategory = MEALS.filter(meal => meal.categoryIds.indexOf(categoryId) >= 0);
