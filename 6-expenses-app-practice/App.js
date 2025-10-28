@@ -7,8 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import ManageExpense from './screens/ManageExpense';
 import RecentExpenses from './screens/RecentExpenses';
 import AllExpenses from './screens/AllExpenses';
-import { Colors } from './constants/styles';
 import IconButton from './components/UI/IconButton';
+import { Colors } from './constants/styles';
+import ExpensesContextProvider from './store/expenses-context';
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -57,23 +58,25 @@ export default function App() {
   return (
     <>
       <StatusBar style="light" />
-      <NavigationContainer>
-        <Stack.Navigator id="main-stack" screenOptions={ {
-          headerStyle: { backgroundColor: Colors.primary500 },
-          headerTintColor: 'white',
-        } }>
-          <Stack.Screen
-            name="ListExpenses"
-            component={ BottomTabsNavigator }
-            options={ {
-              headerShown: false,
-            } }
-          />
-          <Stack.Screen name="ManageExpense" component={ ManageExpense } options={ {
-            presentation: 'modal',
-          } } />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <ExpensesContextProvider>
+        <NavigationContainer>
+          <Stack.Navigator id="main-stack" screenOptions={ {
+            headerStyle: { backgroundColor: Colors.primary500 },
+            headerTintColor: 'white',
+          } }>
+            <Stack.Screen
+              name="ListExpenses"
+              component={ BottomTabsNavigator }
+              options={ {
+                headerShown: false,
+              } }
+            />
+            <Stack.Screen name="ManageExpense" component={ ManageExpense } options={ {
+              presentation: 'modal',
+            } } />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ExpensesContextProvider>
     </>
   );
 }
