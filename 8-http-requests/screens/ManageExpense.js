@@ -1,4 +1,4 @@
-import { useContext, useLayoutEffect } from 'react';
+import { useContext, useLayoutEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import IconButton from '../components/UI/IconButton';
@@ -6,8 +6,13 @@ import ExpenseForm from '../components/ManageExpense/ExpenseForm';
 import { deleteExpense, storeExpense, updateExpense } from '../util/http';
 import { Colors } from '../constants/styles';
 import { ExpensesContext } from '../store/expenses-context';
+import LoadingOverlay from '../components/UI/LoadingOverlay';
+import ErrorOverlay from '../components/UI/ErrorOverlay';
 
 export default function ManageExpense({ navigation, route }) {
+  const [ isSubmitting, setIsSubmitting ] = useState(false);
+  const [ error, setError ] = useState(null);
+
   const expensesCtx = useContext(ExpensesContext);
 
   const expenseId = route.params?.expenseId;
@@ -24,22 +29,48 @@ export default function ManageExpense({ navigation, route }) {
   }
 
   async function handleSubmit(expenseData) {
-    if (isNew) {
-      const id = await storeExpense(expenseData);
-      expensesCtx.addExpense({ ...expenseData, id });
-    } else {
-      expensesCtx.updateExpense(expenseId, expenseData);
-      await updateExpense(expenseId, expenseData);
-    }
+    setIsSubmitting(true);
 
-    navigation.goBack();
+    try {
+      if (isNew) {
+        const id = await storeExpense(expenseData);
+        expensesCtx.addExpense({ ...expenseData, id });
+      } else {
+        expensesCtx.updateExpense(expenseId, expenseData);
+        await updateExpense(expenseId, expenseData);
+      }
+
+      navigation.goBack();
+    } catch (error) {
+      setError('Could not save data - please try again later!');
+      setIsSubmitting(false);
+    }
   }
 
   async function handleDeleteExpense() {
-    await deleteExpense(expenseId);
-    expensesCtx.deleteExpense(expenseId);
+    setIsSubmitting(true);
 
-    navigation.goBack();
+    try {
+      await deleteExpense(expenseId);
+      expensesCtx.deleteExpense(expenseId);
+
+      navigation.goBack();
+    } catch (e) {
+      setError('Could not delete expense - please try again later!');
+      setIsSubmitting(false);
+    }
+  }
+
+  function handleError() {
+    setError(null);
+  }
+
+  if (error && !isSubmitting) {
+    return <ErrorOverlay message={ error } onConfirm={ handleError } />
+  }
+
+  if (isSubmitting) {
+    return <LoadingOverlay />;
   }
 
   return (

@@ -1,4 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
+import { useContext, useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -9,12 +10,50 @@ import RecentExpenses from './screens/RecentExpenses';
 import AllExpenses from './screens/AllExpenses';
 import IconButton from './components/UI/IconButton';
 import { Colors } from './constants/styles';
-import ExpensesContextProvider from './store/expenses-context';
+import ExpensesContextProvider, { ExpensesContext } from './store/expenses-context';
+import { fetchExpenses } from './util/http';
+import LoadingOverlay from './components/UI/LoadingOverlay';
+import ErrorOverlay from './components/UI/ErrorOverlay';
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 function BottomTabsNavigator() {
+  const [ error, setError ] = useState(null);
+  const [ isFetching, setIsFetching ] = useState(true);
+  const expensesCtx = useContext(ExpensesContext);
+
+  useEffect(() => {
+    async function getExpenses() {
+      setIsFetching(true);
+
+      try {
+        const expenses = await fetchExpenses();
+
+        expensesCtx.setExpenses(expenses);
+      } catch (error) {
+        setError('Could not fetch expenses.');
+      }
+
+      setIsFetching(false);
+
+    }
+
+    getExpenses();
+  }, []);
+
+  function handleError() {
+    setError(null);
+  }
+
+  if (error && !isFetching) {
+    return <ErrorOverlay message={ error } onConfirm={ handleError } />
+  }
+
+  if (isFetching) {
+    return <LoadingOverlay />;
+  }
+
   return (
     <BottomTabs.Navigator
       id="main-bottom-tabs"
