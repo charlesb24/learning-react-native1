@@ -1,17 +1,20 @@
+import { StatusBar } from 'expo-status-bar';
+import { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StatusBar } from 'expo-status-bar';
 
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import { Colors } from './constants/styles';
+import AuthContextProvider, { AuthContext } from './store/auth-context';
 
 const Stack = createNativeStackNavigator();
 
 function AuthStack() {
   return (
     <Stack.Navigator
+      id="login-stack"
       screenOptions={ {
         headerStyle: { backgroundColor: Colors.primary500 },
         headerTintColor: 'white',
@@ -27,6 +30,7 @@ function AuthStack() {
 function AuthenticatedStack() {
   return (
     <Stack.Navigator
+      id="content-stack"
       screenOptions={ {
         headerStyle: { backgroundColor: Colors.primary500 },
         headerTintColor: 'white',
@@ -39,9 +43,12 @@ function AuthenticatedStack() {
 }
 
 function Navigation() {
+  const authCtx = useContext(AuthContext);
+
   return (
     <NavigationContainer>
-      <AuthStack />
+      { !authCtx.isAuthenticated && <AuthStack /> }
+      { authCtx.isAuthenticated && <AuthenticatedStack /> }
     </NavigationContainer>
   );
 }
@@ -51,7 +58,9 @@ export default function App() {
     <>
       <StatusBar style="light" />
 
-      <Navigation />
+      <AuthContextProvider>
+        <Navigation />
+      </AuthContextProvider>
     </>
   );
 }
