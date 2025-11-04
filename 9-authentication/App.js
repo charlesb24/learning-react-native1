@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import IconButton from './components/UI/IconButton';
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
@@ -28,6 +29,8 @@ function AuthStack() {
 }
 
 function AuthenticatedStack() {
+  const authCtx = useContext(AuthContext);
+
   return (
     <Stack.Navigator
       id="content-stack"
@@ -35,6 +38,7 @@ function AuthenticatedStack() {
         headerStyle: { backgroundColor: Colors.primary500 },
         headerTintColor: 'white',
         contentStyle: { backgroundColor: Colors.primary100 },
+        headerRight: ({ tintColor }) => <IconButton onPress={ authCtx.logout } icon="exit" color={ tintColor } size={ 24 } />
       } }
     >
       <Stack.Screen name="Welcome" component={ WelcomeScreen } />
